@@ -175,7 +175,7 @@ h3{font-family:'Fredoka',sans-serif;font-weight:500;font-size:.85rem;color:var(-
 .curtain{position:absolute;top:0;bottom:0;width:51%;z-index:6;transition:transform 1s cubic-bezier(.6,.05,.3,1);background:repeating-linear-gradient(90deg,#7a0f22 0 14px,#a31a33 14px 24px,#5e0a19 24px 30px);box-shadow:inset 0 0 40px rgba(0,0,0,.5)}
 .cl{left:0}.cr{right:0}.booth.open .cl{transform:translateX(-96%)}.booth.open .cr{transform:translateX(96%)}
 .cd{position:absolute;inset:0;z-index:7;display:flex;align-items:center;justify-content:center;font:700 120px 'Fredoka';color:#fff;text-shadow:0 0 30px #000;pointer-events:none}
-.flash{position:absolute;inset:0;background:#fff;opacity:0;z-index:8;pointer-events:none}.flash.fire{animation:fl .45s ease-out}@keyframes fl{0%{opacity:.95}100%{opacity:0}}
+.flash{position:absolute;inset:0;background:#fff;opacity:0;z-index:8;pointer-events:none}.flash.fe{animation:fl .45s ease-out}@keyframes fl{0%{opacity:.95}100%{opacity:0}}
 .b-panel{width:100%;background:linear-gradient(180deg,#3a3a3a,#1c1c1c);padding:14px;display:flex;align-items:center;justify-content:space-around;gap:10px;border-top:3px solid #e8c88c}
 .coin-slot{position:relative;width:78px;text-align:center}
 .coin-slot .slot{height:14px;width:46px;margin:0 auto 6px;border-radius:7px;background:#000;border:3px solid #c9a24f;box-shadow:0 0 8px rgba(255,210,100,.35)}
@@ -445,14 +445,14 @@ var bakeryDesserts=[
 {id:'cheesecake',emoji:'🍰',name:'NY Cheesecake',desc:'Creamy & Smooth',delay:0},{id:'cookie',emoji:'🍪',name:'Choco Cookie',desc:'Crunchy & Warm',delay:.12},{id:'tart',emoji:'🥧',name:'Berry Tart',desc:'Buttery & Fruity',tag:'NEW',delay:.24},{id:'brulee',emoji:'🍮',name:'Crème Brûlée',desc:'Caramel Crack',tag:'CHEF',delay:.36},
 {id:'waffle',emoji:'🧇',name:'Belgian Waffle',desc:'Crisp & Fluffy',delay:0},{id:'pancake',emoji:'🥞',name:'Pancake Stack',desc:'Maple Heaven',delay:.12},{id:'pretzel',emoji:'🥨',name:'Cinnamon Pretzel',desc:'Salty & Sweet',tag:'NEW',delay:.24},{id:'honeycake',emoji:'🍯',name:'Honey Cake',desc:'Golden Layers',delay:.36}];
 var frameColors=[{id:'#FFFFFF'},{id:'#FDE2E8'},{id:'#D5DDD4'},{id:'#D0E4EF'},{id:'#E8C9B4'},{id:'#FFF8E1'},{id:'#2a1a10'},{id:'#F5E6A3'}];
-var frameStickers=[{id:'',label:'✕'},{id:'♥',label:'♥'},{id:'★',label:'★'},{id:'☕',label:'☕'},{id:'✿',label:'✿'},{id:'☁',label:'☁'},{id:'♪',label:'♪'},{id:'✧',label:'✧'}];
+var frameStickers=[{id:'',label:'✕'},{id:'♥️',label:'♥️'},{id:'★',label:'★'},{id:'☕',label:'☕'},{id:'✿',label:'✿'},{id:'☁',label:'☁'},{id:'♪',label:'♪'},{id:'✧',label:'✧'}];
 var genLink='',genCode='',glassOpen=false,pendingRemoveEl=null,brewTok=0;
 var pMap={home:0,coffee:1,bakery:2,photo:3,note:4,giftbox:5};
 
 /* ===== HELPERS ===== */
 function esc(t){var d=document.createElement('div');d.textContent=t==null?'':t;return d.innerHTML}
 function toast(m,t){t=t||'inf';var c=G('toast-c'),e=document.createElement('div');e.className='toast '+t;e.innerHTML='<i class="fas '+({err:'fa-circle-exclamation',ok:'fa-circle-check',inf:'fa-circle-info'}[t])+'"></i> '+m;c.appendChild(e);setTimeout(function(){e.style.animation='tOut .3s ease forwards';setTimeout(function(){e.remove()},300)},3000)}
-function spawnCute(){var ch=['♥','♡','★','✧','☕','✿','♪','☁'],co=['#D4A574','#FFB89A','#E8728A','#C9B1D0','#A8D8C8','#F5E6A3'];for(var i=0;i<3;i++)(function(k){setTimeout(function(){var h=document.createElement('div');h.className='cute-float';h.textContent=ch[Math.floor(Math.random()*ch.length)];h.style.left=(15+Math.random()*70)+'%';h.style.top=(35+Math.random()*30)+'%';h.style.color=co[Math.floor(Math.random()*co.length)];document.body.appendChild(h);setTimeout(function(){h.remove()},2500)},k*120)})(i)}
+function spawnCute(){var ch=['♥️','♡','★','✧','☕','✿','♪','☁'],co=['#D4A574','#FFB89A','#E8728A','#C9B1D0','#A8D8C8','#F5E6A3'];for(var i=0;i<3;i++)(function(k){setTimeout(function(){var h=document.createElement('div');h.className='cute-float';h.textContent=ch[Math.floor(Math.random()*ch.length)];h.style.left=(15+Math.random()*70)+'%';h.style.top=(35+Math.random()*30)+'%';h.style.color=co[Math.floor(Math.random()*co.length)];document.body.appendChild(h);setTimeout(function(){h.remove()},2500)},k*120)})(i)}
 function sleep(ms){return new Promise(function(r){setTimeout(r,ms)})}
 function mcol(c,m){return !c?'#8D6E63':(m==='none'?c.color.base:(c.color[m]||c.color.milk))}
 function getMilkColor(c){return mcol(c,GS.coffee.milk)}
@@ -607,21 +607,40 @@ function makeDraggable(el){
 }
 
 /* ===== SHARING (short gift code) ===== */
+var FIREBASE_URL='https://cafe-be45d-default-rtdb.firebaseio.com/'; // paste your Firebase Realtime Database URL here, e.g. 'https://xxxx-default-rtdb.firebaseio.com'
+var genBusy=false;
 function getDb(){try{return window.claude&&claude.use?claude.use('db'):Promise.resolve(null)}catch(e){return Promise.resolve(null)}}
 function rid(){var a='abcdefghjkmnpqrstuvwxyz23456789',s='';for(var i=0;i<7;i++)s+=a[Math.floor(Math.random()*a.length)];return s}
 function baseUrl(){return location.href.split('#')[0]}
 function shrink(u,k,q){return new Promise(function(res){if(!u)return res(u);var i=new Image();i.onload=function(){var c=document.createElement('canvas');c.width=Math.round(i.width*k);c.height=Math.round(i.height*k);c.getContext('2d').drawImage(i,0,0,c.width,c.height);res(c.toDataURL('image/jpeg',q))};i.onerror=function(){res(u)};i.src=u})}
 function enc(d){try{var c=JSON.parse(JSON.stringify(d));if(c.photo&&c.photo.indexOf('data:image')===0)c.photo=c.photo.replace(/^data:image\/jpeg;base64,/,'~P~');return LZString.compressToEncodedURIComponent(JSON.stringify(c))}catch(e){return''}}
 function dec(e){try{var raw=LZString.decompressFromEncodedURIComponent(e);if(!raw)return null;var d=JSON.parse(raw);if(d.photo&&d.photo.indexOf('~P~')===0)d.photo='data:image/jpeg;base64,'+d.photo.substring(3);return d}catch(x){return null}}
-async function generateLink(){
-  var b=G('btn-gen');b.disabled=true;b.textContent='Sealing your hamper…';
+function cleanCode(c){return String(c||'').toLowerCase().replace(/[^a-z0-9]/g,'')}
+async function cloudSave(code,data){if(!FIREBASE_URL)return false;try{var r=await fetch(FIREBASE_URL.replace(/\/$/,'')+'/hampers/'+cleanCode(code)+'.json',{method:'PUT',body:JSON.stringify(data)});return r.ok}catch(e){return false}}
+async function cloudLoad(code){if(!FIREBASE_URL)return null;try{var r=await fetch(FIREBASE_URL.replace(/\/$/,'')+'/hampers/'+cleanCode(code)+'.json');if(!r.ok)return null;return await r.json()}catch(e){return null}}
+async function generateLink(only){
+  if(genBusy)return;if(typeof only!=='string')only='';
+  if(only&&((GS.off||[]).indexOf(only)>=0||(only==='note'&&!GS.note)||(only==='photo'&&!GS.photo))){toast('That gift is not in your hamper','err');return}
+  genBusy=true;try{await buildCode(only)}finally{genBusy=false}
+}
+async function buildCode(only){
+  var all=['coffee','dessert','note','photo'],b=G('btn-gen');
+  b.disabled=true;b.textContent='Sealing your hamper…';
   var db=await getDb(),data=JSON.parse(JSON.stringify(GS));genCode='';
-  if(db){try{var c=rid(),ph=data.photo,chunks=[];if(ph){for(var q=0;q<ph.length;q+=200000)chunks.push(ph.substring(q,q+200000));data.photo=null;data.pc=chunks.length}for(var q2=0;q2<chunks.length;q2++)await db.collection('hamperphotos').doc(c+'_'+q2).set({p:chunks[q2]});await db.collection('hampers').doc(c).set({v:JSON.stringify(data),t:Date.now()});genCode=c;genLink=baseUrl()+'#g='+c}catch(e){genCode='';data=JSON.parse(JSON.stringify(GS))}}
-  if(!genCode){try{var r0=await fetch('/api/hampers',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(GS)});if(r0.ok){var j0=await r0.json();if(j0.code){genCode=j0.code;genLink=baseUrl()+'#g='+genCode;data=JSON.parse(JSON.stringify(GS))}}}catch(e){}}
-  if(!genCode){data=JSON.parse(JSON.stringify(GS));data.photo=await shrink(data.photo,.4,.6);var e2=enc(data);if(!e2){toast('Failed to generate link.','err');b.disabled=false;b.textContent='Try again';return}genLink=baseUrl()+'#gift='+e2}
+  data.off=only?all.filter(function(k){return k!==only}):(GS.off||[]).slice();
+  if(data.off.indexOf('photo')>=0)data.photo=null;
+  var base=JSON.stringify(data),lite=JSON.parse(base);
+  lite.photo=await shrink(lite.photo,.6,.7);
+  var names={coffee:'Coffee',dessert:'Treat',note:'Note',photo:'Photo strip'};
+  if(db){try{var c=rid(),ph=data.photo,chunks=[];if(ph){for(var q=0;q<ph.length;q+=200000)chunks.push(ph.substring(q,q+200000));data.photo=null;data.pc=chunks.length}for(var q2=0;q2<chunks.length;q2++)await db.collection('hamperphotos').doc(c+'_'+q2).set({p:chunks[q2]});await db.collection('hampers').doc(c).set({v:JSON.stringify(data),t:Date.now()});genCode=c;genLink=baseUrl()+'#g='+c}catch(e){genCode='';data=JSON.parse(base)}}
+  if(!genCode&&FIREBASE_URL){var c2=rid();if(await cloudSave(c2,lite)){genCode=c2;genLink=baseUrl()+'#g='+c2}}
+  if(!genCode){try{var r0=await fetch('/api/hampers',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(lite)});if(r0.ok){var j0=await r0.json();if(j0.code){genCode=j0.code;genLink=baseUrl()+'#g='+genCode}}}catch(e){}}
+  if(!genCode){var fb=JSON.parse(base);fb.photo=await shrink(fb.photo,.3,.5);var e2=enc(fb);if(!e2){toast('Failed to generate link.','err');b.disabled=false;b.textContent='Try again';return}genLink=baseUrl()+'#gift='+e2}
+  if(genCode&&window.VAULT&&!VAULT.some(function(v){return v.code===genCode})){var ds=bakeryDesserts.find(function(x){return x.id===GS.dessert});VAULT.push({code:genCode,data:lite,label:only?names[only]+' only':((GS.coffee.type||'Coffee')+' + '+(ds?ds.name:'Treat')),opened:false});saveVault()}
   G('code-big').textContent=genCode||'';G('code-big').style.display=genCode?'block':'none';G('link-input').value=genLink;G('code-disp').style.display='block';
-  G('code-note').textContent=genCode?'Share the link or just the code — they will see this exact hamper.':'Gift-code storage is unavailable here, so this link carries a compressed copy of your hamper.';
-  b.innerHTML='<i class="fas fa-check"></i> Sealed';G('hamper-lid').classList.remove('open');launchConfetti();spawnCute();toast('Gift hamper sealed!','ok');
+  G('code-note').textContent=genCode?'Share the link or just the code — they will see this exact gift.':'Short links are not set up yet, so this link carries a compressed copy of your hamper.';
+  b.disabled=false;b.innerHTML='<i class="fas fa-link"></i> Generate new code';
+  G('hamper-lid').classList.remove('open');launchConfetti();spawnCute();toast('Gift sealed!','ok');
 }
 async function copyText(t,m){try{await navigator.clipboard.writeText(t)}catch(e){var i=G('link-input');i.value=t;i.select();document.execCommand('copy');i.value=genLink}toast(m,'ok')}
 function copyLink(){if(genLink)copyText(genLink,'Link copied!')}function copyCode(){if(genCode)copyText(genCode,'Code copied!');else copyLink()}
@@ -633,11 +652,20 @@ function shareEmail(){if(genLink)window.open('mailto:?subject='+encodeURICompone
 function openByCode(){var c=G('gift-code-in').value.trim().toLowerCase();if(c)loadGift('g',c)}
 async function loadGift(kind,val){
   toast('Unwrapping your gift…','inf');var d=null;
-  try{if(kind==='gift')d=dec(val);else{var db=await getDb();if(db){var s=await db.collection('hampers').doc(val).get();if(s.exists){d=JSON.parse(s.data().v);if(d.pc){var ps='';for(var k=0;k<d.pc;k++){var cs=await db.collection('hamperphotos').doc(val+'_'+k).get();if(cs.exists)ps+=cs.data().p}d.photo=ps||null}}}if(!d){var r1=await fetch('/api/hampers/'+encodeURIComponent(String(val).toLowerCase()));if(r1.ok)d=await r1.json()}}}catch(e){}
+  try{
+    if(kind==='gift')d=dec(val);
+    else{
+      var db=await getDb();
+      if(db){var s=await db.collection('hampers').doc(val).get();if(s.exists){d=JSON.parse(s.data().v);if(d.pc){var ps='';for(var k=0;k<d.pc;k++){var cs=await db.collection('hamperphotos').doc(val+'_'+k).get();if(cs.exists)ps+=cs.data().p}d.photo=ps||null}}}
+      if(!d)d=await cloudLoad(val);
+      if(!d){var r1=await fetch('/api/hampers/'+encodeURIComponent(String(val).toLowerCase()));if(r1.ok)d=await r1.json()}
+    }
+  }catch(e){}
   if(d&&d.coffee&&d.dessert)showGiftView(d);else navigateTo('invalid');
 }
-function showGiftView(data){navigateTo('gift-view');G('prog').classList.remove('vis');G('gv-playground').style.display='none';G('gv-playground').innerHTML='';G('gv-open-area').style.display='';G('gv-box').classList.remove('opened');window._giftData=data}
+function showGiftView(data){navigateTo('gift-view');G('prog').classList.remove('vis');G('gv-playground').style.display='none';G('gv-playground').innerHTML='';G('gv-open-area').style.display='';G('gv-box').classList.remove('opened');var m=G('gv-make');if(m)m.style.display='none';window._giftData=data}
 function openGiftBox(){G('gv-box').classList.add('opened');setTimeout(function(){G('gv-open-area').style.display='none';showBirthdayBanner()},800)}
+function makeYours(){location.hash='make'}
 var FX=[['confetti','🎉 Confetti'],['sparkles','✨ Sparkles'],['flowers','🌸 Flowers'],['hearts','💖 Hearts'],['balloons','🎈 Balloons'],['none','🚫 None']];
 var FXSET={sparkles:['✨','✦','⭐','💫','✧'],flowers:['🌸','🌷','🌼','🌹','🌺','💐'],hearts:['💖','💕','❤️','💗','💝'],balloons:['🎈','🎈','🎈']};
 function buildFxRow(){var r=G('fx-opts');r.innerHTML='';FX.forEach(function(o){var b=document.createElement('button');b.className='chip'+((GS.effect||'confetti')===o[0]?' act':'');b.textContent=o[1];b.onclick=function(){GS.effect=o[0];r.querySelectorAll('.chip').forEach(function(x){x.classList.remove('act')});b.classList.add('act');previewEffect()};r.appendChild(b)})}
@@ -651,7 +679,7 @@ function previewEffect(){runEffect(GS.effect||'confetti')}
 function showBirthdayBanner(){
   var d=window._giftData||{},fx=d.effect||'confetti',msg=(d.popupMsg||'').trim();
   var icons={confetti:['🎁','🎉','🎊','✨'],sparkles:['✨','💫','⭐','✨'],flowers:['🌸','🌷','🌼','🌹'],hearts:['💖','💕','💝','💗'],balloons:['🎈','🎁','🎈','🎉'],none:['🎁','🎁','🎁','🎁']}[fx]||['🎁','🎉','🎊','✨'];
-  var showPlay=function(){var pg=G('gv-playground');pg.style.display='block';buildDraggableItems(pg)};
+  var showPlay=function(){var pg=G('gv-playground');pg.style.display='block';buildDraggableItems(pg);var m=G('gv-make');if(m)m.style.display='flex'};
   if(!msg){runEffect(fx);spawnCute();setTimeout(showPlay,fx==='none'?200:1400);return}
   var o=document.createElement('div');o.className='bday-overlay';
   o.innerHTML='<div class="bday-emojis">'+icons.map(function(x){return '<span>'+x+'</span>'}).join('')+'</div><div class="bday-text msg">'+esc(msg)+'</div><button class="btn btn-p bday-btn">See my gift <span class="ico">→</span></button>';
@@ -678,10 +706,10 @@ function launchConfetti(){
   for(var i=0;i<90;i++)P.push({x:cv.width/2+(Math.random()-.5)*200,y:cv.height/2,vx:(Math.random()-.5)*11,vy:-Math.random()*12-3,w:4+Math.random()*5,h:2+Math.random()*3,c:cols[i%8],r:Math.random()*360,rv:(Math.random()-.5)*10,g:.22+Math.random()*.08});
   var f=0;(function a(){cx.clearRect(0,0,cv.width,cv.height);P.forEach(function(p){p.x+=p.vx;p.y+=p.vy;p.vy+=p.g;p.vx*=.99;p.r+=p.rv;cx.save();cx.translate(p.x,p.y);cx.rotate(p.r*Math.PI/180);cx.fillStyle=p.c;cx.globalAlpha=Math.max(0,1-f/130);cx.fillRect(-p.w/2,-p.h/2,p.w,p.h);cx.restore()});if(++f<140)requestAnimationFrame(a);else cx.clearRect(0,0,cv.width,cv.height)})();
 }
-function createFloatingElements(){var c=G('float-deco'),s=['☕','♥','✦','♡','✧','🤎','🍃','♪','✿','☁','★'];for(var i=0;i<14;i++){var e=document.createElement('div');e.className='fd';e.textContent=s[Math.floor(Math.random()*s.length)];e.style.left=Math.random()*100+'%';e.style.animationDuration=(18+Math.random()*20)+'s';e.style.animationDelay=(Math.random()*14)+'s';c.appendChild(e)}}
+function createFloatingElements(){var c=G('float-deco'),s=['☕','♥️','✦','♡','✧','🤎','🍃','♪','✿','☁','★'];for(var i=0;i<14;i++){var e=document.createElement('div');e.className='fd';e.textContent=s[Math.floor(Math.random()*s.length)];e.style.left=Math.random()*100+'%';e.style.animationDuration=(18+Math.random()*20)+'s';e.style.animationDelay=(Math.random()*14)+'s';c.appendChild(e)}}
 
 /* ===== INIT ===== */
-function route(){var h=location.hash;if(h.indexOf('#g=')===0)loadGift('g',h.slice(3));else if(h.indexOf('#gift=')===0)loadGift('gift',h.slice(6))}
+function route(){var h=location.hash;if(h.indexOf('#g=')===0)loadGift('g',h.slice(3));else if(h.indexOf('#gift=')===0)loadGift('gift',h.slice(6));else if(h==='#make'){history.replaceState(null,'',baseUrl());startCreating()}}
 function init(){createFloatingElements();buildCoffeeGrid();buildMugGrid();renderMachine();ico();route();window.addEventListener('hashchange',route);G('gv-box').addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();openGiftBox()}});window.addEventListener('resize',function(){var c=G('confetti-canvas');c.width=innerWidth;c.height=innerHeight})}
 document.addEventListener('DOMContentLoaded',init);
 /* ===== GIFT VAULT (simple) ===== */
@@ -725,6 +753,12 @@ function listSavedGifts(){
   var pick = prompt('Your saved gift codes:\n\n' + list + '\n\nEnter a code to open:');
   if(pick) openSavedGift(pick);
 }
+
+/* ===== NEW: per-gift code buttons + Make yours button ===== */
+(function(){
+  var bg=G('btn-gen');if(bg&&bg.parentNode)bg.parentNode.insertAdjacentHTML('afterend','<div class="share-row"><span class="sub" style="width:100%;font-size:12px">Or make a separate code for just one gift:</span><button class="btn btn-s btn-sm" onclick="generateLink(\'coffee\')">☕ Coffee</button><button class="btn btn-s btn-sm" onclick="generateLink(\'dessert\')">🧁 Treat</button><button class="btn btn-s btn-sm" onclick="generateLink(\'photo\')">📸 Photo</button><button class="btn btn-s btn-sm" onclick="generateLink(\'note\')">💌 Note</button></div>');
+  var pg=G('gv-playground');if(pg)pg.insertAdjacentHTML('afterend','<div class="nav-row" id="gv-make" style="display:none"><button class="btn btn-p" onclick="makeYours()">☕ Make yours</button></div>');
+})();
 </script>
 </body>
 </html>
